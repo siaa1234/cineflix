@@ -6,7 +6,7 @@ on:
       target:
         description: 'Target URL😈'
         required: true
-        default: 'https://laksidu.site'
+        default: 'https://hansaka2008.github.io/Cinemax/'
       vus:
         description: 'Virtual Users'
         required: true
