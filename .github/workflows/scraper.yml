@@ -2,8 +2,8 @@ name: CineSubz Scraper
 
 on:
   schedule:
-    - cron: "0 */6 * * *"   # හැම 6 පැයකට වරක්
-  workflow_dispatch:          # manual "Run workflow" button
+    - cron: "0 */6 * * *" # හැම 6 පැයකට වරක්
+  workflow_dispatch: # manual "Run workflow" button
 
 permissions:
   contents: write
@@ -35,4 +35,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add cinesubz.json
           git diff --cached --quiet || git commit -m "Update cinesubz data [skip ci]"
-          git pushi
+          git push
