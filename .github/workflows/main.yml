@@ -1,59 +1,35 @@
-name: Load Test
+name: CineSubz Downloader
 
 on:
+  schedule:
+    - cron: "0 */6 * * *"
   workflow_dispatch:
-    inputs:
-      target:
-        description: 'Target URL😈'
-        required: true
-        default: 'https://www.laksidu.site/'
-      vus:
-        description: 'Virtual Users'
-        required: true
-        default: '50'
+
+permissions:
+  contents: write
 
 jobs:
-  load-test:
+  scrape:
     runs-on: ubuntu-latest
     steps:
-      - name: Install k6
-        uses: grafana/setup-k6-action@v1
+      - uses: actions/checkout@v4
 
-      - name: Create test script
-        env:
-          TARGET: ${{ github.event.inputs.target || 'https://laksidu.site' }}
-          VUS: ${{ github.event.inputs.vus || '50' }}
-        run: |
-          cat > test.js <<EOF
-          import http from 'k6/http';
-          import { check, sleep } from 'k6';
-
-          export const options = {
-            stages: [
-              { duration: '1m', target: $VUS },
-              { duration: '3m', target: $VUS },
-              { duration: '1m', target: 0 },
-            ],
-            thresholds: {
-              http_req_duration: ['p(95)<500'],
-              http_req_failed: ['rate<0.01'],
-            },
-          };
-
-          export default function () {
-            const res = http.get('$TARGET');
-            check(res, { 'status is 200': (r) => r.status === 200 });
-            sleep(1);
-          }
-          EOF
-          cat test.js
-
-      - name: Run load test
-        run: k6 run --summary-export=summary.json test.js
-
-      - name: Upload results
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: actions/setup-python@v5
         with:
-          name: load-test-summary
-          path: summary.json
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests playwright
+          playwright install chromium --with-deps
+
+      - name: Run scraper
+        run: python scraper_dl.py
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add downloads.json
+          git diff --cached --quiet || git commit -m "Update downloads [skip ci]"
+          git push
