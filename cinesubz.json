@@ -1,7 +1,7 @@
 {
-  "scraped_at": "2026-10-31T16:32:04.978547+00:00",
+  "scraped_at": "2026-10-31T20:47:32.341843+00:00",
   "source": "https://cinesubz.co",
-  "search_error": "HTTPSConnectionPool(host='cinesubz.net', port=443): Read timed out. (read timeout=30)",
+  "search": [],
   "latest": [
     {
       "id": 96894,
